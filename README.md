@@ -1,5 +1,7 @@
 # Kafeteria
 
+[![CI](https://github.com/kmnhan/kafeteria/actions/workflows/ci.yml/badge.svg)](https://github.com/kmnhan/kafeteria/actions/workflows/ci.yml)
+
 Kafeteria is a Python package to asynchronously access the menu of the cafeterias at KAIST.
 
 ## Installation
