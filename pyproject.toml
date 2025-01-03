@@ -1,0 +1,76 @@
+[project]
+name = "kafeteria"
+version = "0.1.0"
+description = "Asynchronously access the menu of the cafeterias at KAIST."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["aiohttp>=3.11.11"]
+
+
+[dependency-groups]
+dev = ["commitizen>=4.1.0", "ipykernel>=6.29.5", "ruff>=0.8.4"]
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+
+[tool.ruff.lint]
+select = [
+    "F",
+    "E",
+    "W",
+    "I",
+    "D",
+    "UP",
+    "YTT",
+    "ASYNC",
+    "S",
+    "FBT",
+    "B",
+    "A",
+    "C4",
+    "FA",
+    "ICN",
+    "LOG",
+    "G",
+    "PIE",
+    "T20",
+    "PYI",
+    "PT",
+    "Q",
+    "RSE",
+    "RET",
+    "SIM",
+    "TID",
+    "TC",
+    "INT",
+    "ARG",
+    "PTH",
+    "FIX",
+    "PLE",
+    "PLW",
+    "TRY",
+    "FLY",
+    "NPY",
+    "PERF",
+    "FURB",
+    "RUF",
+]
+ignore = []
+extend-select = []
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+
+
+[tool.commitizen]
+major_version_zero = true
+version_provider = "pep621"
