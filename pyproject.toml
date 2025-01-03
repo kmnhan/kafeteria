@@ -11,7 +11,13 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = ["commitizen>=4.1.0", "ipykernel>=6.29.5", "ruff>=0.8.4"]
+dev = [
+    "commitizen>=4.1.0",
+    "ipykernel>=6.29.5",
+    "pytest>=8.3.4",
+    "pytest-asyncio>=0.25.1",
+    "ruff>=0.8.4",
+]
 
 [tool.ruff]
 line-length = 88
@@ -59,7 +65,11 @@ select = [
     "FURB",
     "RUF",
 ]
-ignore = []
+ignore = [
+    "S101", # assert
+    "D100", # missing docstring in public module
+    "D103", # missing docstring in public function
+]
 extend-select = []
 
 [tool.ruff.lint.pydocstyle]
@@ -77,3 +87,17 @@ docstring-code-line-length = "dynamic"
 [tool.commitizen]
 major_version_zero = true
 version_provider = "pep621"
+
+
+[tool.pytest.ini_options]
+addopts = [
+    "-ra",
+    "--strict-config",
+    "--strict-markers",
+    "--import-mode=importlib",
+]
+testpaths = "tests"
+minversion = "8.3"
+log_cli_level = "INFO"
+xfail_strict = true
+filterwarnings = ["always"]
