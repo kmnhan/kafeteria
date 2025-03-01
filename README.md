@@ -1,23 +1,23 @@
 # Kafeteria
 
+[![Supported Python Versions](https://img.shields.io/pypi/pyversions/kafeteria?logo=python&logoColor=white)](https://pypi.org/project/kafeteria/)
+[![PyPi](https://img.shields.io/pypi/v/kafeteria?logo=pypi&logoColor=white)](https://pypi.org/project/kafeteria/)
 [![CI](https://github.com/kmnhan/kafeteria/actions/workflows/ci.yml/badge.svg)](https://github.com/kmnhan/kafeteria/actions/workflows/ci.yml)
 
 Kafeteria is a Python package to asynchronously access the menu of the cafeterias at KAIST.
 
 ## Installation
 
-Clone the repository and install from source:
+Install the package using pip:
 
 ```bash
-git clone https://github.com/kmnhan/kafeteria.git
-cd kafeteria
-pip install .
+pip install kafeteria
 ```
 
 If you want optional Slack integration, install with the `slack` extra:
 
 ```bash
-pip install .[slack]
+pip install kafeteria[slack]
 ```
 
 ## Usage

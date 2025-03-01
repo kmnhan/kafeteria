@@ -3,15 +3,25 @@ name = "kafeteria"
 version = "0.2.0"
 description = "Asynchronously access the menu of the cafeterias at KAIST."
 readme = "README.md"
+authors = [{ name = "Kimoon Han", email = "khan@kaist.ac.kr" }]
 requires-python = ">=3.10"
-dependencies = [
-    "aiohttp>=3.11.11",
+keywords = ["kaist", "cafeteria", "asyncio", "aiohttp"]
+license = { file = "LICENSE" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Framework :: AsyncIO",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
 ]
+dependencies = ["aiohttp>=3.11.11"]
 
 [project.optional-dependencies]
-slack = [
-    "slack-sdk>=3.34.0",
-]
+slack = ["slack-sdk>=3.34.0"]
 
 [build-system]
 requires = ["hatchling"]
