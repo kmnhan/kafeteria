@@ -10,6 +10,7 @@
 
 ### Refactor
 
+- improve slack message format
 - expand __all__ exports in module to include additional classes and errors
 - split into submodule
 
