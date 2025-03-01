@@ -94,7 +94,9 @@ async def get_menu(cafeteria: Cafeteria, dt: datetime.date | None = None) -> Men
     >>> menu = await get_menu("fclt")
     """
     if dt is None:
-        dt = datetime.date.today()
+        dt = datetime.datetime.now(
+            datetime.timezone(offset=datetime.timedelta(hours=9))
+        ).date()
 
     if cafeteria not in get_args(Cafeteria):
         raise InvalidCafeteriaError(cafeteria)
