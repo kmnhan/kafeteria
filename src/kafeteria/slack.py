@@ -11,7 +11,7 @@ from typing import Literal, cast
 
 import slack_sdk
 
-from kafeteria.core import Cafeteria, get_menus
+from kafeteria.core import Cafeteria, _make_url, get_menus
 
 _DAYS_OF_WEEK = ("월", "화", "수", "목", "금", "토", "일")
 
@@ -28,6 +28,7 @@ def _send_message(message: str | list[str]):
             channel=os.environ.get("KAFETERIA_SLACK_CID"),
             text=message,
             mrkdwn=True,
+            unfurl_links=False,
         )
     except slack_sdk.errors.SlackApiError:
         logger.exception("Error posting message")
@@ -37,7 +38,7 @@ def _indent_lines(s: str) -> str:
     return "\n".join([f"\t{line}" for line in s.split("\n")])
 
 
-def _make_message():
+def _make_message() -> list[str]:
     """Compose the message to send to the slack channel."""
     now = datetime.datetime.now(datetime.timezone(offset=datetime.timedelta(hours=9)))
 
@@ -71,10 +72,14 @@ def _make_message():
         f"{date.strftime('%-m월 %-d일')} ({_DAYS_OF_WEEK[date.weekday()]})"
     )
 
-    output: list[str] = [f":knife_fork_plate: {formatted_date} {menu_key} :yum:"]
+    output: list[str] = [f":knife_fork_plate: *{formatted_date} {menu_key}* :yum:"]
 
-    for menu in asyncio.run(get_menus(cafeteria_list, date)):
-        output.append(f"*{menu['식당']}* " + menu[f"{menu_key}시간"])
+    for cafeteria, menu in zip(
+        cafeteria_list, asyncio.run(get_menus(cafeteria_list, date)), strict=True
+    ):
+        link = _make_url(cafeteria, date)
+        header = f"*{menu['식당']}* " + menu[f"{menu_key}시간"]
+        output.append(f"<{link}|{header}>")
         output.append(_indent_lines(menu[menu_key]) + "\n")
 
     return output

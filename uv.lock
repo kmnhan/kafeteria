@@ -572,6 +572,7 @@ slack = [
 dev = [
     { name = "commitizen" },
     { name = "ipykernel" },
+    { name = "nest-asyncio" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "ruff" },
@@ -588,6 +589,7 @@ provides-extras = ["slack"]
 dev = [
     { name = "commitizen", specifier = ">=4.1.0" },
     { name = "ipykernel", specifier = ">=6.29.5" },
+    { name = "nest-asyncio", specifier = ">=1.6.0" },
     { name = "pytest", specifier = ">=8.3.4" },
     { name = "pytest-asyncio", specifier = ">=0.25.1" },
     { name = "ruff", specifier = ">=0.8.4" },
