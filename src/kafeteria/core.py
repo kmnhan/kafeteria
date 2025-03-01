@@ -8,16 +8,18 @@ from typing import Literal, TypedDict, get_args, get_type_hints
 
 import aiohttp
 
-Cafeteria = Literal["fclt", "west", "east1", "east2", "emp", "icc"]
+Cafeteria = Literal["fclt", "west", "east1", "east2", "emp", "icc", "hawam", "seoul"]
 """
 Valid cafeteria codes.
 
 - "fclt": 카이마루
 - "west": 서측식당
-- "east1": 동측식당
-- "east2": 동측교직원식당
+- "east1": 동측 학생식당
+- "east2": 동측 교직원식당
 - "emp": 교수회관
-- "icc": ICC
+- "icc": 문지캠퍼스
+- "hawam": 화암 기숙사식당
+- "seoul": 서울캠퍼스 구내식당
 
 """
 
@@ -67,7 +69,13 @@ def _make_url(cafeteria: Cafeteria, dt: datetime.date) -> str:
 
 
 def _parse_group(group: str) -> str:
-    return html.unescape(group).replace("<br />", "\n").replace("<br/>", "\n").strip()
+    return (
+        html.unescape(group)
+        .replace("<br />", "")
+        .replace("<br/>", "")
+        .strip()
+        .replace("\r", "\n")
+    )
 
 
 async def get_menu(cafeteria: Cafeteria, dt: datetime.date | None = None) -> Menu:

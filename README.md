@@ -14,6 +14,12 @@ cd kafeteria
 pip install .
 ```
 
+If you want optional Slack integration, install with the `slack` extra:
+
+```bash
+pip install .[slack]
+```
+
 ## Usage
 
 Use the `get_menu` function to get the menu for a specific cafeteria, or the `get_menus` function to get the menus for multiple cafeterias at once.
@@ -22,10 +28,12 @@ Valid cafeteria codes are:
 
 - `fclt` : 카이마루
 - `west` : 서측식당
-- `east1` : 동측식당
-- `east2` : 동측교직원식당
+- `east1` : 동측 학생식당
+- `east2` : 동측 교직원식당
 - `emp` : 교수회관
-- `icc` : ICC
+- `icc` : 문지캠퍼스
+- `hawam` : 화암 기숙사식당
+- `seoul` : 서울캠퍼스 구내식당
 
 Here's an example:
 
@@ -50,4 +58,77 @@ async def main():
 
 
 asyncio.run(main())
+```
+
+## Slack Integration
+
+You can also publish menus to a Slack bot.
+
+First, you need to set up a Slack app and get a bot token. Once you have a bot set up with the necessary permissions, set the following environment variables:
+
+- `KAFETERIA_SLACK_BOT_TOKEN` (required): The bot token for the Slack app.
+
+- `KAFETERIA_SLACK_CHANNEL` (required): The channel ID to post the message to.
+
+  This can be found by right-clicking on the channel in the Slack app and selecting "Copy link". The channel ID is the last part of the URL.
+
+  For more information, see the [slack api documentation](https://api.slack.com/messaging/sending>).
+
+- `KAFETERIA_MENU_TIME` (optional): The menu to send.
+
+  This can be one of 0, 1, 2, or 3. The behavior is as follows:
+
+  - 1: breakfast
+  - 2: lunch
+  - 3: dinner
+  - 0: default, automatically selects the menu based on the current time:
+
+    - breakfast: 19:30 - 09:00
+    - lunch: 09:00 - 14:00
+    - dinner: 14:00 - 19:30
+
+- `KAFETERIA_LIST` (optional): The list of cafeterias to send the menu for.
+
+  This should be a comma-separated list of cafeteria codes. By default, `fclt,west,east1,east2` is used.
+
+Then, you can publish the menu to a channel using `kafeteria.slack.publish()`:
+
+```python
+import kafeteria.slack
+
+kafeteria.slack.publish()
+```
+
+This can be automated using a scheduled job, for example using GitHub Actions:
+
+```yaml
+name: Publish Menu
+
+on:
+  schedule:
+    # Every weekday at 11:30 AM GMT+9 (2:30 AM UTC)
+    - cron: "30 2 * * 1-5"
+
+env:
+  KAFETERIA_SLACK_BOT_TOKEN: ${{ secrets.KAFETERIA_SLACK_BOT_TOKEN }} # Set in repository secrets
+  KAFETERIA_SLACK_CHANNEL: "C0123456789" # Replace with your channel ID
+  KAFETERIA_MENU_TIME: "0" # Automatically select the menu based on workflow run time
+  KAFETERIA_LIST: "fclt,west,east1,east2"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: pip install kafeteria[slack]
+
+      - name: Publish menu
+        run: python -c 'import kafeteria.slack; kafeteria.slack.publish()'
 ```
