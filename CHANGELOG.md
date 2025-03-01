@@ -1,3 +1,5 @@
+## Unreleased
+
 ## 0.2.1 (2025-03-01)
 
 ### Refactor
