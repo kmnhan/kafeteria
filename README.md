@@ -62,9 +62,9 @@ asyncio.run(main())
 
 ## Slack Integration
 
-You can also publish menus to a Slack bot.
+You can also publish today's menu to a Slack channel using the `kafeteria.slack.publish` function.
 
-First, you need to set up a Slack app and get a bot token. Once you have a bot set up with the necessary permissions, set the following environment variables:
+First, you need to [set up a Slack app](https://api.slack.com/quickstart#creating) with the `chat:write` permission. Once you have a bot set up with the necessary permissions, set the following environment variables:
 
 - `KAFETERIA_SLACK_BOT_TOKEN` (required): The bot token for the Slack app.
 
