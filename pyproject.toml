@@ -6,6 +6,9 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = ["aiohttp>=3.11.11"]
 
+[project.optional-dependencies]
+slack = ["slack-sdk>=3.34.0"]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
