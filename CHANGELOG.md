@@ -1,3 +1,9 @@
+## Unreleased
+
+### Refactor
+
+- add license and package metadata
+
 ## 0.2.0 (2025-03-01)
 
 ### Feat
