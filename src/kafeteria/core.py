@@ -1,4 +1,11 @@
-__all__ = ["get_menu", "get_menus"]
+__all__ = [
+    "Cafeteria",
+    "InvalidCafeteriaError",
+    "Menu",
+    "MenuParsingError",
+    "get_menu",
+    "get_menus",
+]
 
 import asyncio
 import datetime
