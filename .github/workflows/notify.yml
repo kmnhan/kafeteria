@@ -2,11 +2,6 @@ name: Publish menu to Slack
 
 on:
   workflow_dispatch:
-  schedule:
-    # Every weekday at 11:30 AM GMT+9 (2:30 AM UTC)
-    - cron: "30 2 * * 1-5"
-    # Every weekday at 5:30 PM GMT+9 (8:30 AM UTC)
-    - cron: "30 8 * * 1-5"
 
 env:
   KAFETERIA_SLACK_BOT_TOKEN: ${{ secrets.KAFETERIA_SLACK_BOT_TOKEN }}
@@ -30,4 +25,4 @@ jobs:
         run: uv sync --all-extras
 
       - name: Publish menu to Slack
-        run: uv run python -c 'import kafeteria.slack; kafeteria.slack.publish()'
+        run: python -c 'import kafeteria.slack; kafeteria.slack.run_publish(skip_holiday=True)'
