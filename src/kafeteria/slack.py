@@ -10,21 +10,23 @@ import os
 from typing import Literal, cast
 
 import slack_sdk
+from slack_sdk.web.async_client import AsyncWebClient
 
 from kafeteria.core import Cafeteria, _make_url, get_menus
 
 _DAYS_OF_WEEK = ("월", "화", "수", "목", "금", "토", "일")
 
 logger = logging.getLogger(__name__)
-client = slack_sdk.WebClient(token=os.environ.get("KAFETERIA_SLACK_BOT_TOKEN"))
+
+client = AsyncWebClient(token=os.environ.get("KAFETERIA_SLACK_BOT_TOKEN"))
 
 
-def _send_message(message: str | list[str]):
-    """Send a message to the slack channel."""
+async def _send_message(message: str | list[str]):
+    """Send a message to the slack channel asynchronously."""
     if isinstance(message, list):
         message = "\n".join(message)
     try:
-        _ = client.chat_postMessage(
+        await client.chat_postMessage(
             channel=os.environ.get("KAFETERIA_SLACK_CID"),
             text=message,
             mrkdwn=True,
@@ -38,7 +40,7 @@ def _indent_lines(s: str) -> str:
     return "\n".join([f"\t{line}" for line in s.split("\n")])
 
 
-def _make_message() -> list[str]:
+async def make_message() -> list[str]:
     """Compose the message to send to the slack channel."""
     now = datetime.datetime.now(datetime.timezone(offset=datetime.timedelta(hours=9)))
 
@@ -74,9 +76,8 @@ def _make_message() -> list[str]:
 
     output: list[str] = [f":knife_fork_plate: *{formatted_date} {menu_key}* :yum:"]
 
-    for cafeteria, menu in zip(
-        cafeteria_list, asyncio.run(get_menus(cafeteria_list, date)), strict=True
-    ):
+    menus = await get_menus(cafeteria_list, date)
+    for cafeteria, menu in zip(cafeteria_list, menus, strict=True):
         link = _make_url(cafeteria, date)
         header = f"*{menu['식당']}* " + menu[f"{menu_key}시간"]
         output.append(f"<{link}|{header}>")
@@ -85,7 +86,31 @@ def _make_message() -> list[str]:
     return output
 
 
-def publish():
-    """Send today's menu to the slack channel."""
-    _send_message(_make_message())
+async def publish(*, skip_holiday: bool = False) -> None:
+    """Send today's menu to the slack channel.
+
+    Parameters
+    ----------
+    skip_holiday : bool
+        If True, the message will not be sent if today is a holiday.
+    """
+    if skip_holiday:
+        from holidayskr import get_holidays
+
+        now = datetime.datetime.now(
+            datetime.timezone(offset=datetime.timedelta(hours=9))
+        )
+        is_holiday: bool = any(
+            holiday[0] == now.date() for holiday in get_holidays(now.year)
+        )
+        if is_holiday:
+            logger.info("Today is a holiday. Skipping the publication.")
+            return
+
+    await _send_message(await make_message())
     logger.info("Message sent")
+
+
+def run_publish(*, skip_holiday: bool = False) -> None:
+    """Run `publish` synchronously."""
+    asyncio.run(publish(skip_holiday=skip_holiday))
