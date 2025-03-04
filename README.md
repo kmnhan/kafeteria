@@ -6,6 +6,8 @@
 
 Kafeteria is a Python package to asynchronously access the menu of the cafeterias at KAIST.
 
+KAIST 학식 메뉴를 asyncio를 사용하여 불러올 수 있는 Python 패키지입니다.
+
 ## Installation
 
 Install the package using pip:
@@ -94,12 +96,25 @@ First, you need to [set up a Slack app](https://api.slack.com/quickstart#creatin
 Then, you can publish the menu to a channel using `kafeteria.slack.publish()`:
 
 ```python
+import asyncio
 import kafeteria.slack
 
-kafeteria.slack.publish()
+asyncio.run(kafeteria.slack.publish())
 ```
 
-This can be automated using a scheduled job, for example using GitHub Actions:
+A shortcut function `kafeteria.slack.run_publish()` is provided for running in non-async environments.
+
+`kafeteria.slack.publish()` and `kafeteria.slack.run_publish()` takes an optional keyword-only parameter, `skip_holiday`, which, if set to `True`, skips publishing the menu when the current day is a holiday in Korea.
+
+### Automation
+
+Slack integration can be automated to publish the menu at a specific time every weekday using a scheduler. An example using [apscheduler](https://apscheduler.readthedocs.io/) is provided in the `kafeteria.scheduler` module, which can be started by running the following command:
+
+```bash
+python -m kafeteria.scheduler
+```
+
+If you want to handle the automation in CI/CD, here is an example GitHub Actions workflow. Note that scheduled workflows may be delayed depending on the GitHub Actions server load.
 
 ```yaml
 name: Publish Menu
@@ -130,5 +145,5 @@ jobs:
         run: pip install kafeteria[slack]
 
       - name: Publish menu
-        run: python -c 'import kafeteria.slack; kafeteria.slack.publish()'
+        run: python -c 'import kafeteria.slack; kafeteria.slack.run_publish(skip_holiday=True)'
 ```
