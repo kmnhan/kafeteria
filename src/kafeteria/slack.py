@@ -72,7 +72,7 @@ async def make_message() -> list[str]:
     date: datetime.date = now.date()
 
     formatted_date: str = (
-        f"{date.strftime('%-m월 %-d일')} ({_DAYS_OF_WEEK[date.weekday()]})"
+        f"{date.month}월 {date.day}일 ({_DAYS_OF_WEEK[date.weekday()]})"
     )
 
     output: list[str] = [f":knife_fork_plate: *{formatted_date} {menu_key}* :yum:"]
