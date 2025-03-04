@@ -1,3 +1,9 @@
+## Unreleased
+
+### Fix
+
+- update date formatting in message on windows
+
 ## 0.3.0 (2025-03-04)
 
 ### Feat
