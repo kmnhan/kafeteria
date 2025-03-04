@@ -1,5 +1,10 @@
 ## Unreleased
 
+### Feat
+
+- add scheduler script
+- add holiday detection and asynchronous publishing
+
 ## 0.2.1 (2025-03-01)
 
 ### Refactor
