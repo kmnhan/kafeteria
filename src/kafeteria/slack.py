@@ -9,6 +9,7 @@ import logging
 import os
 from typing import Literal, cast
 
+import holidayskr
 import slack_sdk
 from slack_sdk.web.async_client import AsyncWebClient
 
@@ -95,13 +96,12 @@ async def publish(*, skip_holiday: bool = False) -> None:
         If True, the message will not be sent if today is a holiday.
     """
     if skip_holiday:
-        from holidayskr import get_holidays
-
         now = datetime.datetime.now(
             datetime.timezone(offset=datetime.timedelta(hours=9))
         )
         is_holiday: bool = any(
-            holiday[0] == now.date() for holiday in get_holidays(now.year)
+            holiday[0] == now.date()
+            for holiday in holidayskr.year_holidays(str(now.year))
         )
         if is_holiday:
             logger.info("Today is a holiday. Skipping the publication.")

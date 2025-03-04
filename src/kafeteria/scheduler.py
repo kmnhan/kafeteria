@@ -4,14 +4,14 @@ import asyncio
 import contextlib
 import os
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
 from kafeteria.slack import publish
 
 STOP = asyncio.Event()
 
 
 async def main() -> None:
-    from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
     scheduler = AsyncIOScheduler()
 
     job_kwargs = {
