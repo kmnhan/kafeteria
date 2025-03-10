@@ -18,6 +18,7 @@ async def main() -> None:
         "day_of_week": "mon-fri",
         "timezone": "Asia/Seoul",
         "kwargs": {"skip_holiday": True},
+        "misfire_grace_time": None,
     }
 
     # Schedule the function to run at 11:30 and 17:30 every weekday.
