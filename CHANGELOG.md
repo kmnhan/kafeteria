@@ -1,3 +1,9 @@
+## Unreleased
+
+### Fix
+
+- **scheduler**: add misfire grace time to scheduler configuration
+
 ## 0.3.1 (2025-03-04)
 
 ### Fix
