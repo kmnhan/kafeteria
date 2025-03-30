@@ -1,3 +1,9 @@
+## Unreleased
+
+### Feat
+
+- **slack**: add option to ignore professor-only menu items in cafeteria menu
+
 ## 0.3.2 (2025-03-10)
 
 ### Fix
