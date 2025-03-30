@@ -13,7 +13,7 @@ import holidayskr
 import slack_sdk
 from slack_sdk.web.async_client import AsyncWebClient
 
-from kafeteria.core import Cafeteria, _make_url, get_menus
+from kafeteria.core import Cafeteria, _make_url, _remove_profonly_lines, get_menus
 
 _DAYS_OF_WEEK = ("월", "화", "수", "목", "금", "토", "일")
 
@@ -22,10 +22,8 @@ logger = logging.getLogger(__name__)
 client = AsyncWebClient(token=os.environ.get("KAFETERIA_SLACK_BOT_TOKEN"))
 
 
-async def _send_message(message: str | list[str]):
+async def _send_message(message: str):
     """Send a message to the slack channel asynchronously."""
-    if isinstance(message, list):
-        message = "\n".join(message)
     try:
         await client.chat_postMessage(
             channel=os.environ.get("KAFETERIA_SLACK_CID"),
@@ -41,11 +39,62 @@ def _indent_lines(s: str) -> str:
     return "\n".join([f"\t{line}" for line in s.split("\n")])
 
 
-async def make_message() -> list[str]:
-    """Compose the message to send to the slack channel."""
+async def make_message(
+    menu_time: Literal[0, 1, 2, 3] | None = None,
+    cafeteria_list: list[Cafeteria] | None = None,
+    dt: datetime.date | None = None,
+    ignore_profonly: bool | None = None,
+) -> str:
+    """Compose the message to send to the slack channel.
+
+    The default values for the parameters are fetched from the environment variables if
+    not provided. The default for each environment variable can be found in the
+    ``README.md`` file.
+
+    Parameters
+    ----------
+    menu_time : int
+        The menu time to fetch. 1 for breakfast, 2 for lunch, 3 for dinner. If 0, it
+        will be determined based on the current time. If None, it will be fetched from
+        the environment variable ``KAFETERIA_MENU_TIME``.
+    cafeteria_list : list of str
+        List of cafeteria codes to fetch the menu for. If None, it will be fetched from
+        the environment variable ``KAFETERIA_LIST``.
+    dt : datetime.date
+        The date to fetch the menu for. If None, it will be set to the present date in
+        Korean standard time.
+    ignore_profonly : bool
+        If True, the professor-only menu will be stripped. If None, it will be fetched
+        from the environment variable ``KAFETERIA_IGNORE_PROFONLY``.
+
+    Returns
+    -------
+    message : str
+        The message to send to the slack channel. Each element of the list is a line in
+        the message.
+
+    """
     now = datetime.datetime.now(datetime.timezone(offset=datetime.timedelta(hours=9)))
 
-    menu_time = int(os.environ.get("KAFETERIA_MENU_TIME", 0))
+    if menu_time is None:
+        menu_time = int(os.environ.get("KAFETERIA_MENU_TIME", 0))
+
+    if cafeteria_list is None:
+        cafeteria_list = cast(
+            list[Cafeteria],
+            [
+                s.strip()
+                for s in os.environ.get("KAFETERIA_LIST", "fclt,west,east1,east2")
+                .strip()
+                .split(",")
+            ],
+        )
+
+    if dt is None:
+        dt = now.date()
+
+    if ignore_profonly is None:
+        ignore_profonly = bool(int(os.environ.get("KAFETERIA_IGNORE_PROFONLY", 1)))
 
     if menu_time == 0:
         if now.time() <= datetime.time(9, 0):
@@ -60,31 +109,25 @@ async def make_message() -> list[str]:
 
     menu_key: Literal["조식", "중식", "석식"] = ("조식", "중식", "석식")[menu_time - 1]
 
-    cafeteria_list = cast(
-        list[Cafeteria],
-        [
-            s.strip()
-            for s in os.environ.get("KAFETERIA_LIST", "fclt,west,east1,east2")
-            .strip()
-            .split(",")
-        ],
-    )
-    date: datetime.date = now.date()
-
-    formatted_date: str = (
-        f"{date.month}월 {date.day}일 ({_DAYS_OF_WEEK[date.weekday()]})"
-    )
+    formatted_date: str = f"{dt.month}월 {dt.day}일 ({_DAYS_OF_WEEK[dt.weekday()]})"
 
     output: list[str] = [f":knife_fork_plate: *{formatted_date} {menu_key}* :yum:"]
 
-    menus = await get_menus(cafeteria_list, date)
+    menus = await get_menus(cafeteria_list, dt)
     for cafeteria, menu in zip(cafeteria_list, menus, strict=True):
-        link = _make_url(cafeteria, date)
+        menu_str = menu[menu_key]
+        if ignore_profonly:
+            menu_str = _remove_profonly_lines(menu_str)
+        menu_str = menu_str.strip()
+
+        if (menu_str == "") or (menu_str == "미운영"):
+            continue
+        link = _make_url(cafeteria, dt)
         header = f"*{menu['식당']}* " + menu[f"{menu_key}시간"]
         output.append(f"<{link}|{header}>")
-        output.append(_indent_lines(menu[menu_key]) + "\n")
+        output.append(_indent_lines(menu_str) + "\n")
 
-    return output
+    return "\n".join(output)
 
 
 async def publish(*, skip_holiday: bool = False) -> None:

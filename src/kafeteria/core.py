@@ -5,6 +5,7 @@ __all__ = [
     "MenuParsingError",
     "get_menu",
     "get_menus",
+    "remove_profonly",
 ]
 
 import asyncio
@@ -83,6 +84,51 @@ def _parse_group(group: str) -> str:
         .strip()
         .replace("\r", "\n")
     )
+
+
+def _remove_profonly_lines(menu_str: str) -> str:
+    """Remove lines containing "교수전용" and all lines after it from the menu string.
+
+    Parameters
+    ----------
+    menu_str
+        The menu string to modify.
+
+    Returns
+    -------
+    str
+        The modified menu string.
+    """
+    lines = menu_str.splitlines()
+    for i, line in enumerate(lines):
+        if "교수전용" in line:
+            prev_line = lines[i - 1].strip() if i > 0 else ""
+            if prev_line.startswith("<") and prev_line.endswith(">"):
+                # Remove the line before the "교수전용" line if it's a heading
+                lines[i - 1] = ""
+            return "\n".join(lines[:i])
+    return menu_str
+
+
+def remove_profonly(menu: Menu) -> Menu:
+    """Trim professor-only menu items from the menu dictionary.
+
+    Removes lines containing "교수전용" and all lines after it from the menu.
+
+    Parameters
+    ----------
+    menu
+        The menu dictionary to modify.
+
+    Returns
+    -------
+    Menu
+        The modified menu dictionary.
+    """
+    for key in ["조식", "중식", "석식"]:
+        if key in menu:
+            menu[key] = _remove_profonly_lines(menu[key])
+    return menu
 
 
 async def get_menu(cafeteria: Cafeteria, dt: datetime.date | None = None) -> Menu:

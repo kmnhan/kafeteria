@@ -93,6 +93,10 @@ First, you need to [set up a Slack app](https://api.slack.com/quickstart#creatin
 
   This should be a comma-separated list of cafeteria codes. By default, `fclt,west,east1,east2` is used.
 
+- `KAFETERIA_IGNORE_PROFONLY` (optional): Whether to ignore the "professor only" menu.
+
+  This flag is used to filter out the "professor only" (교수전용) menu from the list of menus. If enabled, all lines below a line that contains `교수전용` will be stripped from the menu. This can be set to `0` or `1`. By default, it is set to `1` (enabled).
+
 Then, you can publish the menu to a channel using `kafeteria.slack.publish()`:
 
 ```python

@@ -7,6 +7,7 @@ __all__ = [
     "MenuParsingError",
     "get_menu",
     "get_menus",
+    "remove_profonly",
 ]
 
 
@@ -17,4 +18,5 @@ from kafeteria.core import (
     MenuParsingError,
     get_menu,
     get_menus,
+    remove_profonly,
 )
