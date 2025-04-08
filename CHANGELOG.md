@@ -1,3 +1,9 @@
+## Unreleased
+
+### Fix
+
+- **slack**: ensure environment variable defaults are treated as strings
+
 ## 0.4.0 (2025-04-08)
 
 ### Feat
