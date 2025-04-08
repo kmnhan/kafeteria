@@ -81,7 +81,7 @@ async def make_message(
 
     if cafeteria_list is None:
         cafeteria_list = cast(
-            list[Cafeteria],
+            "list[Cafeteria]",
             [
                 s.strip()
                 for s in os.environ.get("KAFETERIA_LIST", "fclt,west,east1,east2")
