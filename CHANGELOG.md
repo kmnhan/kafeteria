@@ -4,6 +4,10 @@
 
 - **slack**: add option to ignore professor-only menu items in cafeteria menu
 
+### Fix
+
+- **core**: update URL scheme from HTTP to HTTPS
+
 ## 0.3.2 (2025-03-10)
 
 ### Fix
