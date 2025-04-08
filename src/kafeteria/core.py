@@ -70,7 +70,7 @@ FOOD_PATTERN = re.compile(
 
 def _make_url(cafeteria: Cafeteria, dt: datetime.date) -> str:
     return (
-        "http://kaist.ac.kr/kr/html/campus/053001.html?"
+        "https://kaist.ac.kr/kr/html/campus/053001.html?"
         f"dvs_cd={cafeteria}&"
         f"stt_dt={dt.strftime('%Y-%m-%d')}"
     )
