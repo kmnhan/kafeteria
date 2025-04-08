@@ -77,7 +77,7 @@ async def make_message(
     now = datetime.datetime.now(datetime.timezone(offset=datetime.timedelta(hours=9)))
 
     if menu_time is None:
-        menu_time = int(os.environ.get("KAFETERIA_MENU_TIME", 0))
+        menu_time = int(os.environ.get("KAFETERIA_MENU_TIME", "0"))
 
     if cafeteria_list is None:
         cafeteria_list = cast(
@@ -94,7 +94,7 @@ async def make_message(
         dt = now.date()
 
     if ignore_profonly is None:
-        ignore_profonly = bool(int(os.environ.get("KAFETERIA_IGNORE_PROFONLY", 1)))
+        ignore_profonly = bool(int(os.environ.get("KAFETERIA_IGNORE_PROFONLY", "1")))
 
     if menu_time == 0:
         if now.time() <= datetime.time(9, 0):
