@@ -43,6 +43,7 @@ async def make_message(
     menu_time: Literal[0, 1, 2, 3] | None = None,
     cafeteria_list: list[Cafeteria] | None = None,
     dt: datetime.date | None = None,
+    *,
     ignore_profonly: bool | None = None,
 ) -> str:
     """Compose the message to send to the slack channel.
