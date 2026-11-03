@@ -9,9 +9,9 @@ __all__ = [
 ]
 
 import asyncio
-import datetime
 import html
 import re
+from datetime import date, datetime, timedelta, timezone
 from typing import Literal, TypedDict, get_args, get_type_hints
 
 import aiohttp
@@ -68,7 +68,7 @@ FOOD_PATTERN = re.compile(
 """Regex pattern to extract menu information from the KAIST website."""
 
 
-def _make_url(cafeteria: Cafeteria, dt: datetime.date) -> str:
+def _make_url(cafeteria: Cafeteria, dt: date) -> str:
     return (
         "https://kaist.ac.kr/kr/html/campus/053001.html?"
         f"dvs_cd={cafeteria}&"
@@ -131,7 +131,7 @@ def remove_profonly(menu: Menu) -> Menu:
     return menu
 
 
-async def get_menu(cafeteria: Cafeteria, dt: datetime.date | None = None) -> Menu:
+async def get_menu(cafeteria: Cafeteria, dt: date | None = None) -> Menu:
     """
     Retrieve the menu for a specified cafeteria on a given date from the KAIST website.
 
@@ -155,9 +155,7 @@ async def get_menu(cafeteria: Cafeteria, dt: datetime.date | None = None) -> Men
     >>> menu = await get_menu("fclt")
     """
     if dt is None:
-        dt = datetime.datetime.now(
-            datetime.timezone(offset=datetime.timedelta(hours=9))
-        ).date()
+        dt = datetime.now(timezone(offset=timedelta(hours=9))).date()
 
     if cafeteria not in get_args(Cafeteria):
         raise InvalidCafeteriaError(cafeteria)
@@ -178,7 +176,7 @@ async def get_menu(cafeteria: Cafeteria, dt: datetime.date | None = None) -> Men
 
 
 async def get_menus(
-    cafeteria_list: list[Cafeteria], dt: datetime.date | None = None
+    cafeteria_list: list[Cafeteria], dt: date | None = None
 ) -> list[Menu]:
     """
     Retrieve the menus for multiple cafeterias on a given date from the KAIST website.
