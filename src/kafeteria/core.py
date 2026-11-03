@@ -16,7 +16,9 @@ from typing import Literal, TypedDict, get_args, get_type_hints
 
 import aiohttp
 
-Cafeteria = Literal["fclt", "west", "east1", "east2", "emp", "icc", "hawam", "seoul"]
+type Cafeteria = Literal[
+    "fclt", "west", "east1", "east2", "emp", "icc", "hawam", "seoul"
+]
 """
 Valid cafeteria codes.
 
@@ -51,7 +53,8 @@ class InvalidCafeteriaError(ValueError):
 
     def __init__(self, cafeteria: str):
         super().__init__(
-            f"Invalid cafeteria code: {cafeteria}, must be one of {get_args(Cafeteria)}"
+            f"Invalid cafeteria code: {cafeteria}, "
+            f"must be one of {get_args(Cafeteria.__value__)}"
         )
 
 
@@ -157,7 +160,7 @@ async def get_menu(cafeteria: Cafeteria, dt: date | None = None) -> Menu:
     if dt is None:
         dt = datetime.now(timezone(offset=timedelta(hours=9))).date()
 
-    if cafeteria not in get_args(Cafeteria):
+    if cafeteria not in get_args(Cafeteria.__value__):
         raise InvalidCafeteriaError(cafeteria)
 
     async with (
