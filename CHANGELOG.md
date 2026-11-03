@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Feat
+
+- require Python 3.12 and support Python 3.15 (#20)
+
 ### Fix
 
 - **slack**: ensure environment variable defaults are treated as strings
