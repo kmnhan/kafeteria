@@ -38,7 +38,7 @@ def menu_requests(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_get_menus_valid_cafeterias(menu_requests):
-    cafeteria_list = ["fclt", "west", "east1", "east2"]
+    cafeteria_list = ["fclt", "west", "east1", "east2", "emp", "icc", "hawam", "seoul"]
     selected_date = dt.date(2023, 10, 1)
     menus = await get_menus(cafeteria_list, selected_date)
     assert menu_requests == [
@@ -57,8 +57,10 @@ async def test_get_menus_valid_cafeterias(menu_requests):
 async def test_get_menus_invalid_cafeteria():
     cafeteria_list = ["invalid"]
     selected_date = dt.date(2023, 10, 1)
-    with pytest.raises(InvalidCafeteriaError):
+    with pytest.raises(InvalidCafeteriaError) as exc_info:
         await get_menus(cafeteria_list, selected_date)
+    for code in ("fclt", "west", "east1", "east2", "emp", "icc", "hawam", "seoul"):
+        assert repr(code) in str(exc_info.value)
 
 
 @pytest.mark.asyncio

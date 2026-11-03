@@ -10,6 +10,8 @@ KAIST 학식 메뉴를 asyncio를 사용하여 불러올 수 있는 Python 패�
 
 ## Installation
 
+Kafeteria requires Python 3.12 or newer.
+
 Install the package using pip:
 
 ```bash
