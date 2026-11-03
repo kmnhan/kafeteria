@@ -4,9 +4,9 @@ For more information on how to use this module, refer to the README.md file.
 """
 
 import asyncio
-import datetime
 import logging
 import os
+from datetime import date, datetime, time, timedelta, timezone
 from typing import Literal, cast
 
 import holidayskr
@@ -42,7 +42,7 @@ def _indent_lines(s: str) -> str:
 async def make_message(
     menu_time: Literal[0, 1, 2, 3] | None = None,
     cafeteria_list: list[Cafeteria] | None = None,
-    dt: datetime.date | None = None,
+    dt: date | None = None,
     *,
     ignore_profonly: bool | None = None,
 ) -> str:
@@ -75,7 +75,7 @@ async def make_message(
         the message.
 
     """
-    now = datetime.datetime.now(datetime.timezone(offset=datetime.timedelta(hours=9)))
+    now = datetime.now(timezone(offset=timedelta(hours=9)))
 
     if menu_time is None:
         menu_time = int(os.environ.get("KAFETERIA_MENU_TIME", "0"))
@@ -98,14 +98,14 @@ async def make_message(
         ignore_profonly = bool(int(os.environ.get("KAFETERIA_IGNORE_PROFONLY", "1")))
 
     if menu_time == 0:
-        if now.time() <= datetime.time(9, 0):
+        if now.time() <= time(9, 0):
             menu_time = 1
-        elif now.time() <= datetime.time(14, 0):
+        elif now.time() <= time(14, 0):
             menu_time = 2
-        elif now.time() <= datetime.time(19, 30):
+        elif now.time() <= time(19, 30):
             menu_time = 3
         else:
-            now = now + datetime.timedelta(days=1)
+            now = now + timedelta(days=1)
             menu_time = 1
 
     menu_key: Literal["조식", "중식", "석식"] = ("조식", "중식", "석식")[menu_time - 1]
@@ -140,9 +140,7 @@ async def publish(*, skip_holiday: bool = False) -> None:
         If True, the message will not be sent if today is a holiday.
     """
     if skip_holiday:
-        now = datetime.datetime.now(
-            datetime.timezone(offset=datetime.timedelta(hours=9))
-        )
+        now = datetime.now(timezone(offset=timedelta(hours=9)))
         is_holiday: bool = any(
             holiday[0] == now.date()
             for holiday in holidayskr.year_holidays(str(now.year))
